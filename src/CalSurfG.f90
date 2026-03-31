@@ -1077,7 +1077,7 @@ subroutine CalSurfG(nx,ny,nz,nparpi,vels,iw,rw,col,dsurf, &
     iwave=2
     igr=0
 !    print*,kmax
-    call caldespersion(nx,ny,nz,vels,pvRg, &
+    call caldespersion(nx,ny,nz,vels,pvRc, &
         iwave,igr,kmaxRg,tRg,depz,minthk)
     igr=1
     call depthkernel(nx,ny,nz,vels,pvRg,sen_vsRg,sen_vpRg, &
@@ -1094,7 +1094,7 @@ subroutine CalSurfG(nx,ny,nz,nparpi,vels,iw,rw,col,dsurf, &
   if(kmaxLg.gt.0) then
     iwave=1
     igr=0
-    call caldespersion(nx,ny,nz,vels,pvLg, &
+    call caldespersion(nx,ny,nz,vels,pvLc, &
         iwave,igr,kmaxLg,tLg,depz,minthk)
     igr=1
     call depthkernel(nx,ny,nz,vels,pvLg,sen_vsLg,sen_vpLg, &
