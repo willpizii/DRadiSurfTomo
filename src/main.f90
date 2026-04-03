@@ -10,7 +10,7 @@
    character logfile*100
    character outmodel*100
    character outsyn*100
-   logical ex ! if file exsit
+   logical ex ! if file exists
    character dummy*40
    character datafileR*80
    character datafileL*80
@@ -57,7 +57,7 @@
    real noiselevel
    real spfra
    real Minvel, Maxvel, Mingam, Maxgam
-   real threshold0, threshold
+   real threshold0, threshold, q25, q75
    integer maxnar, maxvp
    integer writepath
    integer narR, narL, nar
@@ -439,24 +439,34 @@
       do i=dallR+1,dallR+dallL
          cbst(i)=obstL(i-dallR)-dsynL(i-dallR)
       enddo
- 
-      threshold=threshold+(maxiter/2-iter)/3*0.5
+
+      call getpercentile(dall,cbst,q25,q75)
+
+      datweight=1.0
+      ! threshold=threshold+(maxiter/2-iter)/3*0.5
       do i=1,dall
-         ! compute weight for the data
-         datweight(i)=1.0
-         if(abs(cbst(i))>threshold) then
-      !      datweight(i)=exp(-abs(cbst(i)-threshold))
-             ! fortest
-             datweight(i)=1
-             ! end fortest
-         endif
-         cbst(i)=cbst(i)*datweight(i)
+      ! compute weight for the data
+      !    datweight(i)=1.0
+      !    if(abs(cbst(i))>threshold) then
+      ! !      datweight(i)=exp(-abs(cbst(i)-threshold))
+      !        ! fortest
+      !        datweight(i)=1
+      !        ! end fortest
+      !    endif
+      !    cbst(i)=cbst(i)*datweight(i)
+            
+      ! copying method from DSurfTomo, since above seems wrong
+      if (cbst(i)<q25*threshold0 .or. cbst(i)>q75*threshold0) then
+         datweight(i) = 0.0
+         cbst(i) = 0
+      endif
       enddo
+
       do i=1,narR ! weight the G matrix every row
          rwR(i)=rwR(i)*datweight(iwR(1+i))
       enddo
-      do i=1,narL ! weight the G matrix every row
-         rwL(i)=rwL(i)*datweight(iwL(1+i))
+      do i=1,narL ! weight for Love - needs the dallR offset?
+         rwL(i)=rwL(i)*datweight(iwL(1+i)+dallR)
       enddo
 
       ! assemble (rwR, rwL) --> rw; (iwR, iwL) --> iw; (colR, colL) --> col
@@ -603,9 +613,10 @@
                 dv, istop, itn, anorm, acond, rnorm, arnorm, xnorm)
       if(istop==3) print*,'istop = 3, large condition number'
 
-      do i=1,dall
-         cbst(i)=cbst(i)/datweight(i)
-      enddo
+      ! commented out in DST, so similarly here
+      ! do i=1,dall
+      !    cbst(i)=cbst(i)/datweight(i)
+      ! enddo
 
 
       ! check the update

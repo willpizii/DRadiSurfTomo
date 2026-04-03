@@ -4,7 +4,7 @@ FC = gfortran
 FFLAGS  = -O3 -ffixed-line-length-none -ffloat-store\
            -W  -fbounds-check -m64 -mcmodel=medium
 F90SRCS = lsmrDataModule.f90 lsmrblasInterface.f90\
-          lsmrblas.f90 lsmrModule.f90 delsph.f90\
+          lsmrblas.f90 lsmrModule.f90 delsph.f90 getpercentile.f90\
           aprod.f90 gaussian.f90 main.f90 synRadAni.f90 CalRadAniG.f90
 FSRCS =  surfdisp96.f
 

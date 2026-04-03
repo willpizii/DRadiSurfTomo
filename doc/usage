@@ -1,12 +1,18 @@
-The usage of DRadiSurfTomo is quite similar to 
-DSurfTomo ()
+The usage of DRadiSurfTomo is quite similar to
+DSurfTomo (Fang et al 2015)
 and
-DAzimSurfTomo ()
+DAzimSurfTomo (Liu et al 2019)
 
 Here are some notes that may be useful.
 
 1. model setup
 
+This code takes two input model files;
+- MOD.Vsv - initial Vsv model, in same format as DSurfTomo
+- MOD.gam - initial gamma model, in same format as velocity model
+
+And up to two input data files, each containing either Rayleigh or Love dispersion data.
+These should be separate.
 
 2. parameter setup
 
@@ -14,4 +20,4 @@ Here are some notes that may be useful.
 3. checkerboard tests
 
 
-4. plot the 
+4. plot output
