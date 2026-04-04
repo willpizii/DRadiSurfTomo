@@ -441,7 +441,6 @@
       enddo
 
       call getpercentile(dall,cbst,q25,q75)
-
       datweight=1.0
       ! threshold=threshold+(maxiter/2-iter)/3*0.5
       do i=1,dall
@@ -454,7 +453,6 @@
       !        ! end fortest
       !    endif
       !    cbst(i)=cbst(i)*datweight(i)
-            
       ! copying method from DSurfTomo, since above seems wrong
       if (cbst(i)<q25*threshold0 .or. cbst(i)>q75*threshold0) then
          datweight(i) = 0.0
@@ -465,7 +463,7 @@
       do i=1,narR ! weight the G matrix every row
          rwR(i)=rwR(i)*datweight(iwR(1+i))
       enddo
-      do i=1,narL ! weight for Love - needs the dallR offset?
+      do i=1,narL ! weight for Love - needs the dallR offset
          rwL(i)=rwL(i)*datweight(iwL(1+i)+dallR)
       enddo
 
@@ -495,8 +493,12 @@
       enddo
  
       ! then add regularization term
-      weight1=dnrm2(dallR,cbst(1:dallR),1)**2/dallR*lambda1
-      weight2=dnrm2(dallL,cbst(dallR+1:dallR+dallL),1)**2/dallL*lambda2/coef
+      ! weight1=dnrm2(dallR,cbst(1:dallR),1)**2/dallR*lambda1
+      ! weight2=dnrm2(dallL,cbst(dallR+1:dallR+dallL),1)**2/dallL*lambda2/coef
+
+      ! fixed regularisation a la DST
+      weight1 = lambda1
+      weight2 = lambda2 / coef
       
       ! smoothing lambda1
       count3=0
@@ -549,33 +551,33 @@
                   count4=count4+1
                   col(nar+1)=(k-1)*nvy*nvx+(j-1)*nvx+i+maxvp/2
                   rw(nar+1)=2.0*weight2
-                  iw(1+nar+1)=dall+count4
-                  cbst(dall+count4)=0.0
+                  iw(1+nar+1)=dall+count3+count4
+                  cbst(dall+count3+count4)=0.0
                   nar=nar+1
                else
                   count4=count4+1
                   col(nar+1)=(k-1)*nvy*nvx+(j-1)*nvx+i+maxvp/2
                   rw(nar+1)=6.0*weight2
-                  iw(1+nar+1)=dall+count4
+                  iw(1+nar+1)=dall+count3+count4
                   rw(nar+2)=-1.0*weight2
-                  iw(1+nar+2)=dall+count4
+                  iw(1+nar+2)=dall+count3+count4
                   col(nar+2)=(k-1)*nvy*nvx+(j-1)*nvx+i-1+maxvp/2
                   rw(nar+3)=-1.0*weight2
-                  iw(1+nar+3)=dall+count4
+                  iw(1+nar+3)=dall+count3+count4
                   col(nar+3)=(k-1)*nvy*nvx+(j-1)*nvx+i+1+maxvp/2
                   rw(nar+4)=-1.0*weight2
-                  iw(1+nar+4)=dall+count4
+                  iw(1+nar+4)=dall+count3+count4
                   col(nar+4)=(k-1)*nvy*nvx+(j-2)*nvx+i+maxvp/2
                   rw(nar+5)=-1.0*weight2
-                  iw(1+nar+5)=dall+count4
+                  iw(1+nar+5)=dall+count3+count4
                   col(nar+5)=(k-1)*nvy*nvx+j*nvx+i+maxvp/2
                   rw(nar+6)=-1.0*weight2
-                  iw(1+nar+6)=dall+count4
+                  iw(1+nar+6)=dall+count3+count4
                   col(nar+6)=(k-2)*nvy*nvx+(j-1)*nvx+i+maxvp/2
                   rw(nar+7)=-1.0*weight2
-                  iw(1+nar+7)=dall+count4
+                  iw(1+nar+7)=dall+count3+count4
                   col(nar+7)=k*nvy*nvx+(j-1)*nvx+i+maxvp/2
-                  cbst(dall+count4)=0
+                  cbst(dall+count3+count4)=0
                   nar=nar+7
                endif
             enddo
